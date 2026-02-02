@@ -1,0 +1,9 @@
+[server]
+id_server = "46.225.8.46"
+relay_server = "46.225.8.46"
+api_server = "https://46.225.8.46"
+key = "e5wvOntv5d5V4CHVNE9OMSwGdHsdTFjC7IPW8an5rLA="
+
+[options]
+disable_settings = true
+allow_direct_ip = false
