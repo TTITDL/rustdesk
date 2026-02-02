@@ -2,52 +2,29 @@ name: Build Windows Client
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
-  build-windows:
-    name: Build RustDesk Windows EXE
+  windows:
     runs-on: windows-latest
 
     steps:
-      # 1️⃣ Repository + Submodule sauber auschecken
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          fetch-depth: 0
 
-      # 2️⃣ Rust Toolchain (MSVC) installieren
-      - name: Install Rust toolchain
+      - name: Install Rust (MSVC)
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc
 
-      # 3️⃣ Cache für Cargo (beschleunigt Builds massiv)
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: windows-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build RustDesk (Release)
+        run: cargo build --release
 
-      # 4️⃣ vcpkg (für native Abhängigkeiten wie OpenSSL, libclang)
-      - name: Setup vcpkg
-        uses: lukka/run-vcpkg@v11
-        with:
-          vcpkgGitCommitId: 3b2145c
-
-      # 5️⃣ RustDesk bauen (Release)
-      - name: Build RustDesk (Windows Release)
-        env:
-          VCPKG_ROOT: ${{ env.VCPKG_ROOT }}
-        run: |
-          cargo build --release
-
-      # 6️⃣ Windows EXE als Artifact hochladen
       - name: Upload Windows EXE
         uses: actions/upload-artifact@v4
         with:
